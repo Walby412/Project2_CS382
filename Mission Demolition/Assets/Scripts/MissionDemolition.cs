@@ -5,14 +5,13 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 
-
-public enum GameMode{
+public enum GameMode {
     idle,
     playing,
     levelEnd
 }
-public class MissionDemolition : MonoBehaviour
-{
+
+public class MissionDemolition : MonoBehaviour {
     static private MissionDemolition S;
 
     [Header("Inscribed")]
@@ -27,21 +26,19 @@ public class MissionDemolition : MonoBehaviour
     public int shotsTaken;
     public GameObject castle;
     public GameMode mode = GameMode.idle;
-    public string showing ="Show Slingshot";
+    public string showing = "Show Slingshot";
 
-
-    void Start()
-    {
+    void Start() {
         S = this;
 
         level = 0;
         shotsTaken = 0;
         levelMax = castles.Length;
-        StartLevel();    
+        StartLevel();
     }
 
-    void StartLevel(){
-        if (castle != null){
+    void StartLevel() {
+        if (castle != null) {
             Destroy(castle);
         }
 
@@ -59,26 +56,24 @@ public class MissionDemolition : MonoBehaviour
         FollowCam.SWITCH_VIEW(FollowCam.eView.both);
     }
 
-    void UpdateGui(){
-        uitLevel.text = "Level: "+(level+1)+" of "+levelMax;
-        uitShots.text = "Shots Taken: "+shotsTaken;
+    void UpdateGui() {
+        uitLevel.text = "Level: " + (level + 1) + " of " + levelMax;
+        uitShots.text = "Shots Taken: " + shotsTaken;
     }
 
-
-    void Update()
-    {
+    void Update() {
         UpdateGui();
 
-        if ((mode==GameMode.playing) && Goal.goalMet){
+        if ((mode == GameMode.playing) && Goal.goalMet) {
             mode = GameMode.levelEnd;
             FollowCam.SWITCH_VIEW(FollowCam.eView.both);
             Invoke("NextLevel", 2f);
-        }        
+        }
     }
 
-    void NextLevel(){
+    void NextLevel() {
         level++;
-        if (level==levelMax){
+        if (level == levelMax) {
             // level = 0;
             // shotsTaken = 0;
             SceneManager.LoadScene(1);
@@ -88,11 +83,16 @@ public class MissionDemolition : MonoBehaviour
         StartLevel();
     }
 
-    static public void SHOT_FIRED(){
+    static public void SHOT_FIRED() {
         S.shotsTaken++;
+
+        // Reverse gravity after every 3rd shot
+        if (S.shotsTaken % 3 == 0) {
+            Projectile.ReverseGravity();
+        }
     }
 
-    static public GameObject GET_CASTLE(){
+    static public GameObject GET_CASTLE() {
         return S.castle;
     }
 }
